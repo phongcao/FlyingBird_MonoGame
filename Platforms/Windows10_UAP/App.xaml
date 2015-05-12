@@ -1,0 +1,8 @@
+﻿<Application
+    x:Class="FlyingBird_MonoGame.App"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:FlyingBird_MonoGame"
+    RequestedTheme="Light">
+
+</Application>
