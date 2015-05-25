@@ -13,7 +13,7 @@ namespace FlyingBird_MonoGame
         public int m_iCurrentFrame;
         public int m_iTotalFrame;
 
-        public GameObject(Texture2D texture, int frameX = 0, int frameY = 0, int frameWidth = 0, int frameHeight = 0, bool active = false)
+        public GameObject(Texture2D texture, int frameX = 0, int frameY = 0, int frameWidth = 0, int frameHeight = 0, float scaleX = 1.0f, float scaleY = 1.0f, bool active = true)
         {
             m_pTexture = texture;
             m_frameInfo = new Rectangle(frameX, frameY, frameWidth, frameHeight);
@@ -25,6 +25,8 @@ namespace FlyingBird_MonoGame
             }
 
             m_sourceRect = m_frameInfo;
+            m_sourceRect.Width *= (int)scaleX;
+            m_sourceRect.Height *= (int)scaleY;
             m_iTotalFrame = texture.Width / m_frameInfo.Width;
             m_iCurrentFrame = 0;
             m_pos = new Vector2(0, 0);
@@ -45,7 +47,7 @@ namespace FlyingBird_MonoGame
             }
 
             Vector2 pos = new Vector2(m_pos.X - scrollX, m_pos.Y);
-            spriteBatch.Begin(SpriteSortMode.Deferred, BlendState.NonPremultiplied);
+            spriteBatch.Begin(SpriteSortMode.Deferred, null, SamplerState.LinearWrap, null, null);
             m_sourceRect.X = (int)(m_iCurrentFrame * m_frameInfo.Width);
             spriteBatch.Draw(m_pTexture, pos, m_sourceRect, Color.White, 0f, Vector2.Zero, 1f, SpriteEffects.None, 0f);
             spriteBatch.End();

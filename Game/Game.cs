@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Input.Touch;
 using System;
 using System.IO;
+using System.Runtime.CompilerServices;
 
 namespace FlyingBird_MonoGame
 {
@@ -82,10 +83,10 @@ namespace FlyingBird_MonoGame
             m_skylineTexture = LoadTexture2D(Content.RootDirectory + "/skyline.png");
             m_groundTexture = LoadTexture2D(Content.RootDirectory + "/ground.png");
 
-            m_sprBird = new GameObject(m_birdTexture, 0, 0, m_birdTexture.Width / 2, m_birdTexture.Height, true);
+            m_sprBird = new GameObject(m_birdTexture, 0, 0, m_birdTexture.Width / 2, m_birdTexture.Height);
             m_sprBird.SetPosition(k_iBirdStartX, k_iBirdStartY);
-            m_sprSkyline = new GameObject(m_skylineTexture, 0, 0, 0, 0, true);
-            m_sprGround = new GameObject(m_groundTexture, 0, 0, 0, 0, true);
+            m_sprSkyline = new GameObject(m_skylineTexture, 0, 0, 0, 0, (GraphicsDevice.Viewport.Width / m_skylineTexture.Width) + 2, 1.0f);
+            m_sprGround = new GameObject(m_groundTexture, 0, 0, 0, 0, (GraphicsDevice.Viewport.Width / m_groundTexture.Width) + 2, 1.0f);
             InitPipes();
         }
 
@@ -183,42 +184,16 @@ namespace FlyingBird_MonoGame
 
         protected void RenderMap(SpriteBatch spriteBatch, int scrollX)
         {
-            int windowsHeight = GraphicsDevice.Viewport.Height;
-            int windowsWidth = GraphicsDevice.Viewport.Width;
-
             // Render ground
-            int groundX = -scrollX;
-            int groundY = windowsHeight - m_groundTexture.Height;
-
-            do
-            {
-                if (groundX + m_groundTexture.Width > 0)
-                {
-                    m_sprGround.SetPosition(groundX, groundY);
-                    m_sprGround.Render(spriteBatch);
-                }
-
-                groundX += m_groundTexture.Width;
-            }
-            while (groundX < windowsWidth);
+            m_sprGround.SetPosition(-scrollX % m_groundTexture.Width, GraphicsDevice.Viewport.Height - m_groundTexture.Height);
+            m_sprGround.Render(spriteBatch);
 
             // Render skyline
-            int skylineX = -scrollX;
-            int skylineY = windowsHeight - m_groundTexture.Height - m_skylineTexture.Height;
-
-            do
-            {
-                if (skylineX + m_skylineTexture.Width > 0)
-                {
-                    m_sprSkyline.SetPosition(skylineX, skylineY);
-                    m_sprSkyline.Render(spriteBatch);
-                }
-
-                skylineX += m_skylineTexture.Width;
-            }
-            while (skylineX < windowsWidth);
+            m_sprSkyline.SetPosition(-scrollX % m_skylineTexture.Width, GraphicsDevice.Viewport.Height - m_groundTexture.Height - m_skylineTexture.Height);
+            m_sprSkyline.Render(spriteBatch);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         protected void ScrollMap()
         {
             m_iMapScrollX += k_iMapScrollSpeed;
@@ -236,7 +211,8 @@ namespace FlyingBird_MonoGame
             // Random distance between two nearby pipes
             int x = startX + rnd.Next(1, k_iNumActivePipes >> 2) * m_pipeTexture.Width;
 
-            GameObject pipe = new GameObject(m_pipeTexture, 0, (frameId == 0) ? 0 : (m_pipeTexture.Height - height), m_pipeTexture.Width >> 1, height, true);
+            // Init pipe
+            GameObject pipe = new GameObject(m_pipeTexture, 0, (frameId == 0) ? 0 : (m_pipeTexture.Height - height), m_pipeTexture.Width >> 1, height);
             pipe.m_iCurrentFrame = frameId;
             pipe.SetPosition(x, 0);
 
